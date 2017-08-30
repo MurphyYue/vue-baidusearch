@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+	<title>百度搜索</title>
+	<script src="js/vue.min.js"></script>
+	<script src="js/vue-resource.js"></script>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		#box{
+			text-align: center;
+			width: 640px;
+			margin: 0 auto;
+		}
+		img{
+			width: 270px;
+		}
+		input{
+			width: 536px;
+			height: 40px;
+			border:1px solid lightgray;
+			border-right: none;
+			text-indent: 1em;
+			margin-bottom: 20px;
+			outline: none;
+			color: #999;
+		}
+		button{
+			width: 102px;
+			height: 42px;
+			color: white;
+			font-size: 16px;
+			background: #3388ff;
+			border: none;
+			vertical-align: top;
+		}
+		li{
+			text-align: left;
+			line-height: 26px;
+			color: #666;
+			list-style-type: none;
+		}
+		.gray{
+			background: #999;
+		}
+	</style>
+</head>
+<body>
+	<div id="box">
+		<img :src="imgUrl" @click="fn()">
+		<br>
+		<input type="text" name="search" v-model="wd" @keyup="search()" @keydown.down="changeDown()" @keydown.up="changeUp()"><button>百度一下</button>
+		<br>
+		<p v-show="arr.length==0">暂无数据</p>
+		<ul>
+			<li v-for="(item,index) in arr" :class="{gray:nowIndex==index}">{{item}}</li>
+		</ul>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	var vm=new Vue({
+		el:'#box',
+		data:{
+			imgUrl:"https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1141175056,251723530&fm=26&gp=0.jpg",
+			wd:'',
+			arr:[],
+			nowIndex:"-1"
+		},
+		methods:{
+			fn:function  () {
+				this.imgUrl= this.imgUrl=="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1141175056,251723530&fm=26&gp=0.jpg"?"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1504000810278&di=e73f864fffc4649b5e5e3f805dcf82e3&imgtype=0&src=http%3A%2F%2Fwww.qiuyongsheng.com%2Fstatic%2Findex%2Fbaidu.jpg":"https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1141175056,251723530&fm=26&gp=0.jpg" 
+			},
+			search:function(){
+				this.$http.jsonp('https://sug.so.360.cn/suggest',{
+					word:this.wd
+				},{
+					emulateJSON:true
+				}).then(function(res){
+					console.log(res.data.s)
+					this.arr=res.data.s
+
+				},function(res){
+					console.log(res.status)
+				})
+			},
+			changeDown:function(){
+				this.nowIndex++
+				if (this.nowIndex>=this.arr.length) {
+					this.nowIndex=-1
+				}
+				console.log(this.nowIndex)
+			},
+			changeUp:function(){
+				this.nowIndex--;
+				if (this.nowIndex<=-1) {
+					this.nowIndex=this.arr.length
+				}
+				console.log(this.nowIndex)
+			}
+		}
+	})
+</script>
